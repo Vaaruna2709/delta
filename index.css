@@ -1,0 +1,144 @@
+body {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+    background-color: #000;
+}
+
+#board {
+    display: grid;
+    grid-template-columns: repeat(8, 1fr);
+    grid-template-rows: repeat(8, 1fr);
+    gap: 0;
+    width: 90vw; /* Adjusted to use relative width */
+    height: 90vw; /* Ensure it's a square */
+    max-width: 640px; /* Ensure it doesn't get too large on bigger screens */
+    max-height: 640px;
+    border: 2px solid #d6cfd5;
+}
+
+.tile {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 1.5rem; /* Responsive font size */
+}
+
+.tile.skyblue {
+    background-color: #000;
+}
+
+.tile.blue {
+    background-color: #11EE00;
+}
+
+.piece {
+    width: 75%;
+    height: 75%;
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 1.2rem; /* Responsive font size */
+    color: #3a3737;
+    cursor: pointer;
+    transition: transform 0.3s ease !important;
+}
+
+.Player-1 {
+    background-color: #0011EE;
+}
+
+.Player-2 {
+    background-color: #EE0011;
+}
+
+#player {
+    color: white;
+    margin-bottom: 0.5rem;
+    font-size: 1.2rem; /* Responsive font size */
+}
+
+.ricochete {
+    width: 10px !important;
+    rotate: 45deg;
+}
+
+.chango-regular {
+    font-family: "Chango", sans-serif;
+    font-weight: 400;
+    font-style: normal;
+}
+
+.semi-rico {
+    clip-path: polygon(0 0, 0% 100%, 100% 0);
+}
+
+.green {
+    background-color: #16e1e9 !important;
+    border: 3px solid rgb(184, 46, 46);
+}
+
+#directions {
+    display: flex;
+    margin-top: 10px;
+    gap: 1rem; /* Add space between buttons */
+}
+
+#directions button {
+    text-align: center;
+    font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+    background-color: #EDC312;
+    color: #123CED;
+    padding: 0.5rem 1rem; /* Responsive padding */
+    font-size: 1rem; /* Responsive font size */
+    border: 2px solid transparent;
+}
+
+.bullet {
+    width: 15px;
+    height: 15px;
+    background-color: #fff;
+    border-radius: 50%;
+    position: absolute;
+    transition: transform 0.5s linear;
+}
+
+.invisible {
+    opacity: 0;
+}
+
+/* Media Queries for smaller screens */
+@media (max-width: 600px) {
+    #board {
+        width: 100vw;
+        height: 100vw;
+    }
+
+    #player {
+        font-size: 1rem;
+    }
+
+    .tile {
+        font-size: 1rem;
+    }
+
+    .piece {
+        width: 70%;
+        height: 70%;
+        font-size: 1rem;
+    }
+
+    #directions {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    #directions button {
+        width: 100%;
+        padding: 0.5rem;
+    }
+}
