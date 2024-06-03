@@ -5,7 +5,12 @@ document.addEventListener("DOMContentLoaded", () => {
     const leftBtn = document.querySelector(".left");
     const rightBtn = document.querySelector(".right");
     const playerElement = document.getElementById("player");
-    
+    const timerElement = document.querySelector(".timer");
+    const pauseElement = document.querySelector(".pause");
+    const resetElement = document.querySelector(".reset");
+    const resumeElement = document.querySelector(".resume");
+   
+    console.log(pauseElement,resetElement,resumeElement);
     const pieceSetup = [
         ["cannon", "", "", "", "", "ricochete", "", "titan"],
         ["", "", "", "ricochete", "", "", "", "semi-rico"],
@@ -19,7 +24,49 @@ document.addEventListener("DOMContentLoaded", () => {
     let pieceClicked = null;
     let activeHighlights = [];
     let currentPlayer = "Player-1";
+    let timer;
+    let isPaused = false;
+    let timeLeft = 20;
+
+    function setTimer(){
+         clearInterval(timer);
+         timeLeft =20;
+         timerElement.textContent = timeLeft
+         
+         timer = setInterval(()=>{
+            if(!isPaused){
+            timeLeft--;
+            timerElement.textContent = timeLeft;
+           
+            if (timeLeft <= 0) {
+                clearInterval(timer);
+                alert(`${currentPlayer === "Player-1" ? "Player-2" : "Player-1"} wins!`);
+             } }},1000)
+        
+    }
+    function pauseGame(){
+        isPaused = true;
+        if(isPaused){
+            console.log("paused");
+        }
+    }
     
+    function resumeGame(){
+        isPaused = false;
+        console.log("resumed");
+    }
+    function resetGame() {
+        isPaused = false;
+        currentPlayer = "Player-1";
+        playerElement.textContent = currentPlayer;
+        setTimer();
+       
+    }
+
+    // Adding event listeners to playback options
+    pauseElement.addEventListener("click", pauseGame);
+    resetElement.addEventListener("click", resetGame);
+    resumeElement.addEventListener("click", resumeGame);
 
     function clearHighlights() {
         activeHighlights.forEach(({ cell, handler }) => {
@@ -31,9 +78,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
     function clickPiece(piece, row, col) {
         clearHighlights();
-
+        pieceClicked = piece;
+        console.log(piece,row,col);
+        let adjCells;
         const tile = document.getElementById(`cell-${row}-${col}`);
-        let adjCells = [
+        if(!piece.classList.contains("cannon")){
+          adjCells = [
             { r: row, c: col + 1 },
             { r: row + 1, c: col },
             { r: row - 1, c: col },
@@ -42,7 +92,14 @@ document.addEventListener("DOMContentLoaded", () => {
             { r: row - 1, c: col + 1 },
             { r: row - 1, c: col - 1 },
             { r: row + 1, c: col - 1 }
-        ];
+          ];
+         }else{
+            adjCells = [
+                {r:row , c: col+1},
+                {r:row,col :col-1}
+            ]
+         }
+        console.log(adjCells);
 
         adjCells.forEach(cell => {
             if (cell.c < 8 && cell.r >= 0 && cell.r < 8 && cell.c >= 0) {
@@ -53,17 +110,17 @@ document.addEventListener("DOMContentLoaded", () => {
                     function movePieceHandler() {
                         piece.dataset.row = cell.r;
                         piece.dataset.col = cell.c;
-                        
+                        clickFn(piece,cell.r,cell.c);
                         tile.removeChild(piece);
-                        
                         adjCell.appendChild(piece);
-                       
                         clearHighlights();
                         if (piece.classList.contains("Player-1")) {
                             findTarget("Player-1");
+                          
                         } else if (piece.classList.contains("Player-2")) {
                             findTarget("Player-2");
                         }
+                        switchPlayer();
                     }
 
                     adjCell.addEventListener("click", movePieceHandler);
@@ -73,26 +130,34 @@ document.addEventListener("DOMContentLoaded", () => {
                         if (adjCell.classList.contains("green")) {
                             adjCell.classList.remove("green");
                             adjCell.removeEventListener("click", movePieceHandler);
+                            if(pieceClicked){
+                                pieceClicked = null;
+                            }
                         }
-                    }, 2000);
+                    }, 2000 )
                 }
             }
         });
+        
     }
-
+   
+    
     function rotate(direction) {
         if (pieceClicked) {
             console.log("pieceClicked", pieceClicked.classList);
+
             updateRotation(pieceClicked, direction);
             pieceClicked = null;
+           
         }
     }
 
     function updateRotation(piece, direction) {
+        if(piece.classList.contains("semi-rico")|| piece.classList.contains("ricochete")){
         let currentRotation = parseInt(piece.dataset.rotation) || 0;
         console.log("Current Rotation:", currentRotation);
         if (direction === "rotate-L") {
-            currentRotation = (currentRotation - 90 ) % 360; // Adding 360 ensures no negative angles
+            currentRotation = (currentRotation - 90 ) % 360; 
         } else if (direction === "rotate-R") {
             currentRotation = (currentRotation + 90) % 360;
         }
@@ -102,54 +167,23 @@ document.addEventListener("DOMContentLoaded", () => {
         let player = piece.classList.contains("Player-1") ? "Player-1" : "Player-2";
         console.log(`Updated rotation: ${currentRotation} for piece at (${piece.dataset.row}, ${piece.dataset.col})`);
         findTarget(player);
+        switchPlayer();
+     }else{
+        alert("Rotation is only possible if the piece selected is either Ricochete or Semiricochete");
+     }
     }
 
     function triggerBtns(){
         leftBtn.addEventListener("click", () => rotate("rotate-L"));
         rightBtn.addEventListener("click", () => rotate("rotate-R"));
     }
-    function clickFn(piece, row, col) {
-        piece.addEventListener("click", () => {
-            clickPiece(piece, row, col);
-            pieceClicked = piece;
-            console.log(piece);
-            togglePlayer(currentPlayer); // Call togglePlayer after the click event is triggered
-        });
-    }
-    
 
-    function togglePlayer(currentPlayer) {
-        let newPlayer = "";
-        if (currentPlayer === "Player-1") {
-            let players1 = document.querySelectorAll(".Player-1");
-            players1.forEach(player1 => {
-                player1.style.pointerEvents = "none";
-            });
-            newPlayer = "Player-2";
-            let players2 = document.querySelectorAll(".Player-2");
-            players2.forEach(player2 => {
-                player2.style.pointerEvents = "auto";
-            });
-        } else if (currentPlayer === "Player-2") {
-            let players1 = document.querySelectorAll(".Player-1");
-            players1.forEach(player1 => {
-                player1.style.pointerEvents = "auto";
-            });
-            let players2 = document.querySelectorAll(".Player-2");
-            players2.forEach(player2 => {
-                player2.style.pointerEvents = "none";
-            });
-            newPlayer = "Player-1";
-        }
-        return newPlayer; // Return the updated player value
-    }
-    
-    currentPlayer = togglePlayer(currentPlayer);
-
+    function clickFn(piece,row, col) {
+     piece.addEventListener("click",()=>{
+     clickPiece(piece,row,col);
    
-    
-    
-
+    })
+    }
 
     function findTarget(player){
         console.log(`Finding target for ${player}`);
@@ -212,7 +246,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 if(cannon){
                     if (targetRow === undefined) {
                         shootBullet(7, targetCol, 0);
-                       ;
+                       
                     } else {
                         shootBullet(7, targetCol, targetRow);
                         
@@ -251,7 +285,7 @@ document.addEventListener("DOMContentLoaded", () => {
         bullet.dataset.direction = deltaY > 0 ? "down" : "up";
         bullet.dataset.direction = deltaX > 0 ? "right" : "left";
         console.log("shootbullet deltax and deltay",deltaX,deltaY);
-        // Start the bullet animation
+       
         bullet.style.transition = "transform 1s linear";
         bullet.style.transform = `translate(${deltaX}px, ${deltaY}px)`;
         bullet.addEventListener('transitionend', () => {
@@ -268,10 +302,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     function afterAnimation(targetCell, initialCell, bullet) {
-        // if (bullet.classList.contains("processed")) {
-        //     return;
-        // }
-        // bullet.classList.add("processed");
+      
     
         if (targetCell.querySelector(".tank")) {
             console.log("Tank hit");
@@ -323,7 +354,7 @@ document.addEventListener("DOMContentLoaded", () => {
         else {
             bullet.classList.add("invisible");
         }
-        console.log("afteranimate ",currentPlayer);
+       
      
         
     }
@@ -331,6 +362,16 @@ document.addEventListener("DOMContentLoaded", () => {
         
         titanPiece.style.transition = "opacity 1s linear"; 
         titanPiece.style.opacity = "0"; 
+        console.log(titanPiece.classList);
+        isPaused = true;
+        setTimeout(()=>{
+            if(titanPiece.classList.contains("Player-1")){
+                alert("Player-2 wins");
+            }else if (titanPiece.classList.contains("Player-2")){
+                alert("Player-1 wins");
+            }
+        },320)
+      
        
     }
     
@@ -343,13 +384,7 @@ document.addEventListener("DOMContentLoaded", () => {
         let initialCol = parseInt(ricochete.dataset.col);
         const diffTop = initialCell.getBoundingClientRect().top - targetCell.getBoundingClientRect().top;
         const diffLeft = initialCell.getBoundingClientRect().left - targetCell.getBoundingClientRect().left;
-        // let newDirection;
-        // if ((angle / 90) % 2 === 0) {
-        //     newDirection = "right"; // Turn right
-        // } else {
-        //     newDirection = "left"; // Turn left
-        // }
-        // console.log("rico direction",newDirection);
+       
         if (diffTop !== 0) { // Vertical movement
             if (diffTop > 0) { // Bottom to top movement
                 if ((angle / 90) % 2 === 0) {
@@ -512,8 +547,31 @@ document.addEventListener("DOMContentLoaded", () => {
        initialCell.removeChild(bullet);
         
     }
+
+    function removeAllEventListeners() {
+        const pieces = document.querySelectorAll(".piece");
+        pieces.forEach(piece => {
+            const clone = piece.cloneNode(true);
+            piece.parentNode.replaceChild(clone, piece);
+        });
+    }
  
+    function switchPlayer() {
+        currentPlayer = currentPlayer === "Player-1" ? "Player-2" : "Player-1";
+        playerElement.textContent = currentPlayer;
+        updatePieceEventListeners(currentPlayer);
+        setTimer();
+    }
     
+    function updatePieceEventListeners(currentPlayer) {
+        removeAllEventListeners();
+        const pieces = document.querySelectorAll(".piece");
+        pieces.forEach(piece => {  
+            if (piece.classList.contains(currentPlayer)) {
+                piece.addEventListener("click", () => clickPiece(piece, parseInt(piece.dataset.row), parseInt(piece.dataset.col)));
+            }
+        });
+    }
  
     
     // Creating the board and setting up the pieces
@@ -534,27 +592,34 @@ document.addEventListener("DOMContentLoaded", () => {
                 piece.dataset.row = row;
                 piece.dataset.col = col;
                 piece.dataset.rotation = 0; 
-                clickFn(piece,row,col);
+                if(!(piece.classList.contains("ricochete")|| piece.classList.contains("semi-rico"))){
+                    piece.textContent = pieceSetup[row][col];
+                    
+                }
+               
                 tile.appendChild(piece);
                 if (row < 4) {
                     piece.classList.add("Player-1");
                 } else {
                     piece.classList.add("Player-2");
                 }
-               if(piece.classList.contains("Player-1")){
+            
                 
                 playerElement.innerText = "Turn : Player-1"
                 playerElement.style.fontFamily ="Chango";
-               }
+          
                
             }
             tile.dataset.row = row;
             tile.dataset.col = col;
             board.appendChild(tile);
         }
+       
         
     }
     triggerBtns();
+    setTimer();
+    updatePieceEventListeners(currentPlayer);
     
 });
 

@@ -1,21 +1,29 @@
 body {
     display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    background-color: #000;
+    justify-content: space-evenly;
+}
+.boardElements{
+    display: flex;
+    width: fit-content;
     flex-direction: column;
     justify-content: center;
     align-items: center;
     height: 100vh;
-    margin: 0;
-    background-color: #000;
+    margin: 1rem;
 }
+
 
 #board {
     display: grid;
     grid-template-columns: repeat(8, 1fr);
     grid-template-rows: repeat(8, 1fr);
     gap: 0;
-    width: 90vw; /* Adjusted to use relative width */
-    height: 90vw; /* Ensure it's a square */
-    max-width: 640px; /* Ensure it doesn't get too large on bigger screens */
+    width: 90vw; 
+    height: 90vw; 
+    max-width: 640px; 
     max-height: 640px;
     border: 2px solid #d6cfd5;
 }
@@ -42,7 +50,8 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-    font-size: 1.2rem; /* Responsive font size */
+    font-size: 1.2rem; 
+    font-weight: 500;
     color: #3a3737;
     cursor: pointer;
     transition: transform 0.3s ease !important;
@@ -59,13 +68,14 @@ body {
 #player {
     color: white;
     margin-bottom: 0.5rem;
-    font-size: 1.2rem; /* Responsive font size */
+    font-size: 1.2rem; 
 }
 
 .ricochete {
     width: 10px !important;
     rotate: 45deg;
 }
+
 
 .chango-regular {
     font-family: "Chango", sans-serif;
@@ -84,8 +94,8 @@ body {
 
 #directions {
     display: flex;
-    margin-top: 10px;
-    gap: 1rem; /* Add space between buttons */
+    margin-top: 0.5rem;
+    gap: 1rem; 
 }
 
 #directions button {
@@ -93,8 +103,8 @@ body {
     font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
     background-color: #EDC312;
     color: #123CED;
-    padding: 0.5rem 1rem; /* Responsive padding */
-    font-size: 1rem; /* Responsive font size */
+    padding: 0.5rem 1rem; 
+    font-size: 1rem;
     border: 2px solid transparent;
 }
 
@@ -111,16 +121,19 @@ body {
     opacity: 0;
 }
 
-/* Media Queries for smaller screens */
+
 @media (max-width: 600px) {
     #board {
+        
         width: 100vw;
         height: 100vw;
     }
-
-    #player {
-        font-size: 1rem;
+    body{
+        display: flex;
+        justify-content: space-around;
+        flex-direction: column;
     }
+
 
     .tile {
         font-size: 1rem;
@@ -140,5 +153,30 @@ body {
     #directions button {
         width: 100%;
         padding: 0.5rem;
+        margin-top: 0.2rem;
     }
+    #player{
+        font-size: 0.95rem;
+        margin-bottom: 0.5rem ;
+    }
+    .timer-options{
+        margin-top: 0;
+    }
+
+}
+
+.timer{
+    color: #11EE00;
+    font-family: "Chango", sans-serif;
+}
+.timer-options{
+    display: flex;
+    flex-direction: column;
+   align-items: center;
+   
+}
+.img-elements img{
+    margin: 4px;
+    height: 20px;
+    width: 20px;
 }
