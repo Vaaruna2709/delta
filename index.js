@@ -12,14 +12,16 @@ document.addEventListener("DOMContentLoaded", () => {
    
     console.log(pauseElement,resetElement,resumeElement);
     const pieceSetup = [
+        //player1 pieces
         ["cannon", "", "", "", "", "ricochete", "", "titan"],
         ["", "", "", "ricochete", "", "", "", "semi-rico"],
-        ["", "tank", "", "", "", "", "", ""],
+        ["", "tank", "", "", "", "semi-rico", "", ""],
         ["", "", "", "", "", "tank", "", ""],
-        ["", "tank", "", "", "", "", "", "titan"],
-        ["", "tank", "", "", "", "", "", "ricochete"],
+         //player2 pieces
+        ["", "tank", "", "", "", "", "", ""],
+        ["semi-rico", "", "", "", "tank", "", "", "ricochete"],
         ["", "ricochete", "", "", "", "semi-rico", "", ""],
-        ["", "", "", "cannon", "", "", "", ""]
+        ["", "", "", "cannon", "", "titan", "", ""]
     ];
     let pieceClicked = null;
     let activeHighlights = [];
@@ -75,7 +77,7 @@ document.addEventListener("DOMContentLoaded", () => {
         });
         activeHighlights = [];
     }
-
+    // clickPiece function adds a class green to change color of adjacent cells and also adds an event listener to movie the piece
     function clickPiece(piece, row, col) {
         clearHighlights();
         pieceClicked = piece;
@@ -184,7 +186,7 @@ document.addEventListener("DOMContentLoaded", () => {
    
     })
     }
-
+    //finds the target on the same column as that of cannon
     function findTarget(player){
         console.log(`Finding target for ${player}`);
         let cannon;
@@ -300,7 +302,7 @@ document.addEventListener("DOMContentLoaded", () => {
         bullet.classList.add("invisible");
        }
     }
-
+    // actions to be performed once the bullet hits the target
     function afterAnimation(targetCell, initialCell, bullet) {
       
     
@@ -356,8 +358,8 @@ document.addEventListener("DOMContentLoaded", () => {
         }
        
      
-        
     }
+    // titan piece disappers when hit by bullet and game comes to an end
     function animateTitanDestruction(titanPiece) {
         
         titanPiece.style.transition = "opacity 1s linear"; 
@@ -374,7 +376,7 @@ document.addEventListener("DOMContentLoaded", () => {
       
        
     }
-    
+    //bullet's direction is recorded and accordingly the direction in which it should deflect is calculated
     function ricoAnimation(bullet, ricochete,targetCell,initialCell) {
         console.log("RicoAnimation triggered");
         console.log("Ricochete dataset:", ricochete.dataset);
@@ -418,7 +420,7 @@ document.addEventListener("DOMContentLoaded", () => {
         console.log("newDirection:", newDirection);
         changeDirection(bullet, initialRow, initialCol, newDirection);
     }
-    
+    //direction in which the bullet should deflect is calculated
     function semiRicoAnimation(bullet, semiRico, semiRicocell, initialCell) {
         const diffTop = initialCell.getBoundingClientRect().top - semiRicocell.getBoundingClientRect().top;
         const diffLeft = initialCell.getBoundingClientRect().left - semiRicocell.getBoundingClientRect().left;
@@ -477,7 +479,7 @@ document.addEventListener("DOMContentLoaded", () => {
         console.log("newDirection:", newDirection);
         changeDirection(bullet, semiRicoRow, semiRicoCol, newDirection);
     }
-    
+    //according to the direction the bullet is rotated and shootbullet is called to move the bullet linearly in that direction
     function changeDirection(bullet, initialRow, initialCol, newDirection) {
         let targetRow ;
         let targetCol;
